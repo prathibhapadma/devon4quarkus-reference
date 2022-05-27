@@ -12,7 +12,9 @@ You can start the DB and Jaeger containers using simple cmd:
 ```
 docker-compose up
 ```
-If you want to use other DB, modify the params in `application.properties`
+If you want to use other DB, modify the params in `application.properties`. 
+
+For using Cloud DBs, refer the steps in [AWS DB](https://github.com/devonfw-sample/devon4quarkus-reference/blob/master/documentation/aws-db-steps.asciidoc) or [Azure DB](https://github.com/devonfw-sample/devon4quarkus-reference/blob/master/documentation/azure-db-steps.asciidoc).
 
 To access Jaeger UI(tracing): http://localhost:16686  
 To access Prometheus(metrics): http://localhost:9090/graph
@@ -33,7 +35,7 @@ You can run tests from your IDE or via Maven. Simply run `./mvnw test ` or `./mv
 
 ## Access your REST endpoint
 
-Go to http://localhost:8080/animals
+Go to http://localhost:8080/product/v1
 
 
 ## OpenAPI & Swagger UI
@@ -100,6 +102,9 @@ kubectl apply -f k8s/ingress.yaml
 ```
 
 Give it a few moments and then open http://demo-quarkus.localhost/products/ in your browser.
+
+- For deploying in **AWS** EKS Cluster, refer this [link](https://github.com/devonfw-sample/devon4quarkus-reference/blob/master/documentation/aws-k8s-steps.asciidoc).
+- For deploying in **Azure** AKS Cluster, refer this [link](https://github.com/devonfw-sample/devon4quarkus-reference/blob/master/documentation/azure-k8s-steps.asciidoc).
 
 ## Helm
 
