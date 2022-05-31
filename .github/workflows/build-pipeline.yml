@@ -7,7 +7,7 @@ on:
         required: false
         default: 'target'
 
-  push:
+
 env:
   targetPath: ${{ github.event_name == 'push' && format('target') || github.event.inputs.target }}
 
