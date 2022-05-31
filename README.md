@@ -1,4 +1,3 @@
------Hello github------
 # devon4quarkus cloud native reference project
 
 This is the reference project of [devon4quarkus](https://github.com/devonfw/devon4quarkus).
