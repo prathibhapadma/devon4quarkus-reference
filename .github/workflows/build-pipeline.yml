@@ -1,4 +1,4 @@
-name: quarkus-project-build
+name: project-build
 
 on:
   workflow_dispatch:
