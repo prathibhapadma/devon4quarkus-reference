@@ -1,0 +1,33 @@
+name: build-pipeline-timothe
+
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      targetPath:
+        description: 'Target directory of build process.'
+        required: false
+        type: string
+        default: './target/'
+
+env:
+  targetPath: ${{ github.event.inputs.targetPath || './target/' }}
+
+jobs:
+  Build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Build the application
+        run: .github/workflows/scripts/build.sh
+        # run: echo ok
+
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: BuildOutput
+          path: ./target/

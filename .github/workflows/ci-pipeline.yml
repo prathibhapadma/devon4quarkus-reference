@@ -1,0 +1,15 @@
+name: ci-pipeline-timothe
+
+on:
+  push:
+
+permissions:
+  actions: write
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  build-pipeline:
+    uses: ./.github/workflows/build-pipeline.yml
