@@ -1,0 +1,92 @@
+name: package-pipeline
+
+on:
+  workflow_run:
+    workflows: quarkus-project-build
+    types: completed
+    branches:
+      - release/*
+      - develop
+  workflow_dispatch:
+    inputs:
+      relativeDockerfilePath:
+        required: false
+        default: src/main/docker/Dockerfile.native
+      imageTagFile:
+        required: false
+        default: pom.xml
+      region:
+        required: false
+        default: 
+      isECR:
+        required: false
+        default: $isECR
+      targetPath:
+        required: false
+        default: ./target/
+
+permissions:
+  actions: write
+
+env:
+  buildPipelineYamlName: 'build-pipeline.yml'
+  ciPipelineYamlName: 'ci-pipeline.yml'
+  relativeDockerfilePath: ${{ github.event.inputs.relativeDockerfilePath || 'src/main/docker/Dockerfile.native' }}
+  imageTagFile: ${{ github.event.inputs.imageTagFile || 'pom.xml' }}
+  region: ${{ github.event.inputs.region || '' }}
+  isECR: ${{ github.event.inputs.isECR || '$isECR' }}
+  targetPath: ${{ github.event.inputs.targetPath || './target/' }}
+
+jobs:
+  on-success-or-manual:
+    name: Package
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.workflow_run.head_commit.id || github.sha }}
+
+      - name: Loading vars
+        uses: tw3lveparsecs/github-actions-setvars@v0.1
+        with:
+          envFilePath: ".github/vars/*"
+
+      - name: Download artifact from build pipeline
+        uses: dawidd6/action-download-artifact@v2
+        id: downloadFromBuild
+        continue-on-error: true
+        with:
+          workflow: ${{ env.buildPipelineYamlName }}
+          commit: ${{ github.event.workflow_run.head_commit.id || github.sha }}
+          check_artifacts:  true
+          name: BuildOutput
+          path: ${{ env.targetPath }}
+
+      - name: Download artifact from ci pipeline
+        uses: dawidd6/action-download-artifact@v2
+        if: ${{ steps.downloadFromBuild.outcome == 'failure' }}
+        with:
+          workflow: ${{ env.ciPipelineYamlName }}
+          commit: ${{ github.event.workflow_run.head_commit.id || github.sha }}
+          check_artifacts:  true
+          name: BuildOutput
+          path: ${{ env.targetPath }}
+
+      - name: Build and push image to registry
+        run: .github/workflows/scripts/package.sh -f "$GITHUB_WORKSPACE/${{ env.relativeDockerfilePath }}" -t "$GITHUB_WORKSPACE/${{ env.imageTagFile }}" -c "$GITHUB_WORKSPACE" -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_PASSWORD }}"  -r "${{ env.registry }}" -i "${{ env.imageName }}" -b "${{ github.event.workflow_run.head_branch || github.head_ref }}"
+        if: ${{ env.isECR != 'true' }}
+
+      - name: Build and push image to registry (AWS)
+        run: .github/workflows/scripts/package.sh -f "$GITHUB_WORKSPACE/${{ env.relativeDockerfilePath }}" -t "$GITHUB_WORKSPACE/${{ env.imageTagFile }}" -c "$GITHUB_WORKSPACE" -a "${{ secrets.AWS_ACCESS_KEY }}" -s "${{ secrets.AWS_SECRET_ACCESS_KEY }}" -l "${{ env.region }}" -r "${{ env.registry }}" -i "${{ env.imageName }}" -b "${{ github.event.workflow_run.head_branch || github.head_ref }}"
+        if: ${{ env.isECR == 'true' }}
+
+# mark to insert step for additional artifact #
+  on-failure:
+    name: Ci Pipeline Failed
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: Cancel Pipeline
+        uses: andymckay/cancel-action@0.2
