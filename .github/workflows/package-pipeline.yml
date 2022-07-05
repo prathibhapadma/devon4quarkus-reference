@@ -2,7 +2,7 @@ name: package-pipeline
 
 on:
   workflow_run:
-    workflows: ci-pipeline-timothe
+    workflows: quarkus-project-build
     types: completed
     branches:
       - release/*
