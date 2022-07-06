@@ -55,12 +55,12 @@ jobs:
         run: terraform apply -destroy -var 'cluster_name=${{ github.event.inputs.cluster_name }}' --auto-approve
         continue-on-error: false	
     
-      - name: Install nginx-ingress controller
-        if: ${{ github.event.inputs.cluster_operation == 'create' }}
-        id: installnginx
-        env:
-          KUBECONFIG: "${{ env.terraformWorkingDirectory }}/kubeconfig"
-        run: .github/workflows/scripts/install-nginx-ingress.sh
+#       - name: Install nginx-ingress controller
+#         if: ${{ github.event.inputs.cluster_operation == 'create' }}
+#         id: installnginx
+#         env:
+#           KUBECONFIG: "${{ env.terraformWorkingDirectory }}/kubeconfig"
+#         run: .github/workflows/scripts/install-nginx-ingress.sh
             
       - name: Obtain DNS name
         if: ${{ github.event.inputs.cluster_operation == 'create' }}
@@ -77,7 +77,6 @@ jobs:
         id: publishdns
         run: |   
           cd .github
-          mkdir vars
           cd vars
           touch "aks_variables.env"
           echo "dns_name=${{ steps.obtaindns.outputs.dnsname }}" >> aks_variables.env
