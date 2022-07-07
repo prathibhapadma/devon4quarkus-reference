@@ -47,10 +47,7 @@ jobs:
       - name: Deploy app to AKS  
         env:
           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
-        run: |
-          chmod +x .github/workflows/scripts/deploy.sh
-          .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}" 
-        shell: bash 
+        run: .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}" 
         
       - name: list pods
         env:
@@ -63,10 +60,7 @@ jobs:
         if: ${{ github.event.inputs.k8sProvider == 'AKS' && github.event.inputs.secretsName != '' }}
         env:
           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
-        run: |
-          chmod +x .github/workflows/scripts/secrets.sh
-          .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.DOCKER_USER }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}" 
-        shell: bash 
+        run: .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.DOCKER_USER }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}" 
 
   Deploy_to_EKS:
     runs-on: ubuntu-latest
@@ -74,7 +68,7 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3 
-
+        
       - name: Set EKS Environment Variables
         uses: tw3lveparsecs/github-actions-setvars@v0.1
         with:
@@ -86,25 +80,15 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.aws_region }}
-                                  
-      - name: Deploy app to EKS  
+
+      - name: Deploy app to EKS 
         run: |
           aws eks update-kubeconfig --name ${{ env.cluster_name }} --region ${{ env.aws_region }}
-          chmod +x .github/workflows/scripts/deploy.sh
           .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}"  
-        shell: bash
           
       - name: Create secrets for EKS
         if: ${{ github.event.inputs.k8sProvider == 'EKS' && github.event.inputs.secretsName != '' }}
         run: |
           aws eks update-kubeconfig --name ${{ env.cluster_name }} --region ${{ env.aws_region }}
-          chmod +x .github/workflows/scripts/secrets.sh
-          .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.AWS_ACCESS_KEY }}" "${{ secrets.AWS_SECRET_ACCESS_KEY }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}"
-        shell: bash  
-        
-     
+          .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.AWS_ACCESS_KEY_ID }}" "${{ secrets.AWS_SECRET_ACCESS_KEY }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}"
 
-       
-          
-  
-      

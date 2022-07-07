@@ -8,6 +8,7 @@ else
 # create secrets for private registry.
 kubectl create secret docker-registry "$2" --docker-server="$5" --docker-username="$3" --docker-password="$4" --namespace="$1" 
 fi
+
 # export secrets name and add secrets into deployment file.
 export secrets=$2 
 yq e '.spec.template.spec."imagePullSecrets"=[{"name":"secrets"}]' -i "$6" 
