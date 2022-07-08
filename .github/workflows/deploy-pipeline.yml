@@ -44,10 +44,15 @@ jobs:
         with:
           envFilePath: ".github/vars/*"
           
-      - name: Deploy app to AKS  
-        env:
-          KUBECONFIG: "${{ github.workspace }}/kubeconfig"
-        run: .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}" 
+      - name: cat secrets
+        run: |
+          echo "DOCKER_USER ${{ secrets.DOCKER_USER }}" 
+          echo "DOCKER_PASSWORD ${{ secrets.DOCKER_PASSWORD }}"
+      
+#       - name: Deploy app to AKS  
+#         env:
+#           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
+#         run: .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}" 
         
 #       - name: list pods
 #         env:
@@ -86,9 +91,9 @@ jobs:
 #           aws eks update-kubeconfig --name ${{ env.cluster_name }} --region ${{ env.aws_region }}
 #           .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}"  
           
-      - name: Create secrets for EKS
-        if: ${{ github.event.inputs.k8sProvider == 'EKS' && github.event.inputs.secretsName != '' }}
-        run: |
-          aws eks update-kubeconfig --name ${{ env.cluster_name }} --region ${{ env.aws_region }}
-          .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.AWS_ACCESS_KEY_ID }}" "${{ secrets.AWS_SECRET_ACCESS_KEY }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}"
+#       - name: Create secrets for EKS
+#         if: ${{ github.event.inputs.k8sProvider == 'EKS' && github.event.inputs.secretsName != '' }}
+#         run: |
+#           aws eks update-kubeconfig --name ${{ env.cluster_name }} --region ${{ env.aws_region }}
+#           .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.AWS_ACCESS_KEY_ID }}" "${{ secrets.AWS_SECRET_ACCESS_KEY }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}"
 
