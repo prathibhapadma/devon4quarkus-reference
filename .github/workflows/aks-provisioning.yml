@@ -10,7 +10,6 @@ on:
         default: devon-hangar
       install_rancher:
         description: 'Installs Rancher on AKS when set to true.'
-        required: true
         type: string
         default: true
       cluster_operation:
