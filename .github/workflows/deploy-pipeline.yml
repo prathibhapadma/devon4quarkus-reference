@@ -1,7 +1,6 @@
 name: quarkus-project-deploy
 
 on:
-  workflow_call:
   workflow_dispatch:
     inputs:
       k8sProvider:
