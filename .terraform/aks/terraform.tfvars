@@ -1,4 +1,4 @@
-cluster_name = "devon-hangar"
+#cluster_name = "devon-hangar"
 
 location = "westeurope"
 
