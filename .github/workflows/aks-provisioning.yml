@@ -35,7 +35,7 @@ jobs:
     
       - name: Terraform - Init
         id: init
-        run: terraform init -backend-config=resource_group_name=az-devops-rg  -backend-config=storage_account_name=hangar -backend-config=container_name=hangarstfiles2 -backend-config=key=terraform.tfstate
+        run: terraform init -backend-config=resource_group_name=az-devops-rg  -backend-config=storage_account_name=hangar -backend-config=container_name=hangarstfiles -backend-config=key=terraform.tfstate
         working-directory: ${{ env.terraformWorkingDirectory }}
         continue-on-error: false
       
@@ -53,12 +53,12 @@ jobs:
         run: terraform apply -destroy -var 'cluster_name=${{ github.event.inputs.cluster_name }}' --auto-approve
         continue-on-error: false	
     
-#       - name: Install nginx-ingress controller
-#         if: ${{ github.event.inputs.cluster_operation == 'create' }}
-#         id: installnginx
-#         env:
-#           KUBECONFIG: "${{ env.terraformWorkingDirectory }}/kubeconfig"
-#         run: .github/workflows/scripts/install-nginx-ingress.sh
+      - name: Install nginx-ingress controller
+        if: ${{ github.event.inputs.cluster_operation == 'create' }}
+        id: installnginx
+        env:
+          KUBECONFIG: "${{ env.terraformWorkingDirectory }}/kubeconfig"
+        run: .github/workflows/scripts/install-nginx-ingress.sh
             
       - name: Obtain DNS name
         if: ${{ github.event.inputs.cluster_operation == 'create' }}
