@@ -11,13 +11,13 @@ on:
       secretsName:
         description: 'ImagePullSecret Name.'
         type: string
-        default: 'acr'
+        default: ''
         
 env:
   deploymentYamlPath: "${{ github.workspace }}/k8s/application-deployment.yaml" 
   ingressYamlPath: "${{ github.workspace }}/k8s/ingress.yaml"  
   deployFilesPath: "${{ github.workspace }}/k8s"
-  k8sNamespace: "hgtest" 
+  k8sNamespace: "hgtestt" 
   provisionPipeline: "aks-provisioning.yml"
   ciPipelineYamlName: "ciPipelineYamlName.yml"
 
@@ -42,11 +42,6 @@ jobs:
         uses: tw3lveparsecs/github-actions-setvars@v0.1
         with:
           envFilePath: ".github/vars/*"
-          
-      - name: cat secrets
-        run: |
-          echo "DOCKER_USER ${{ secrets.DOCKER_USER }}" 
-          echo "DOCKER_PASSWORD ${{ secrets.DOCKER_PASSWORD }}"
           
       - name: cat secrets
         run: |
