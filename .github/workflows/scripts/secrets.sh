@@ -1,7 +1,7 @@
 set -e
 #kubectl delete already existed namespace
 namespaceStatus=$(kubectl get ns "$1" -o json | jq .status.phase -r)
-if [ $namespaceStatus != "Active" ]
+if [ $namespaceStatus == "Active" ]
 then
     echo "Deploy apps"
 else
