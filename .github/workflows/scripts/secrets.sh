@@ -1,12 +1,8 @@
 set -e
 #kubectl delete already existed namespace
 namespaceStatus=$(kubectl get ns "$1" -o json | jq .status.phase -r)
-if [ $namespaceStatus == "Active" ]
+if [ $namespaceStatus != "Active" ]
 then
-    echo "Deploy apps"
-    # echo "Delete exitst secrets namespace $1"
-    # kubectl delete ns "$1"
-else
     echo "Create namespace"
     #Create namespace in cluster.
     kubectl create namespace "$1"
