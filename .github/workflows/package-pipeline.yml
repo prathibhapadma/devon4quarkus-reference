@@ -11,13 +11,13 @@ on:
     inputs:
       relativeDockerfilePath:
         required: false
-        default: src/main/docker/Dockerfile.native
+        default: src/main/docker/Dockerfile.jvm
       imageTagFile:
         required: false
         default: pom.xml
       region:
         required: false
-        default: 
+        default:
       isECR:
         required: false
         default: $isECR
@@ -47,7 +47,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.workflow_run.head_commit.id || github.sha }}
-          
+
       - name: debug
         run: echo ${{ github.event.workflow_run.head_branch || github.ref }}
 
