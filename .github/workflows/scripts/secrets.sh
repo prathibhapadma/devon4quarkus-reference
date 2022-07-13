@@ -1,7 +1,7 @@
 set -e
 #kubectl delete already existed namespace
 namespaceStatus=$(kubectl get ns "$1" -o json | jq .status.phase -r)
-if [ $namespaceStatus == "Active" ] #[ $num1 -eq 1 ]
+if [ $namespaceStatus == "Active" ]
 then
     echo "Deploy apps"
     # echo "Delete exitst secrets namespace $1"
@@ -12,7 +12,8 @@ else
     kubectl create namespace "$1"
 fi
 #Command to delete secrets to pull image from private registry.
-if test ! -z "$2"
+secretstatus=$(kubectl get secrets "$2" --namespace="$1")
+if [ $secretstatus == "Active" ]
 then
     echo "Delete already exitst secret "$2""
     kubectl delete secret "$2" --namespace="$1"
