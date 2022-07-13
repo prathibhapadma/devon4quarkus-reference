@@ -48,6 +48,12 @@ jobs:
           echo "DOCKER_USER ${{ secrets.DOCKER_USER }}"
           echo "DOCKER_PASSWORD ${{ secrets.DOCKER_PASSWORD }}"
 
+      - name: Create secrets for AKS
+        if: ${{ github.event.inputs.k8sProvider == 'AKS' && github.event.inputs.secretsName != '' }}
+        env:
+          KUBECONFIG: "${{ github.workspace }}/kubeconfig"
+        run: .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.DOCKER_USER }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}"
+
       - name: Deploy app to AKS
         env:
           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
@@ -60,11 +66,6 @@ jobs:
           kubectl get all -n "${{ env.k8sNamespace }}"
           kubectl get svc -n nginx-ingress
 
-      - name: Create secrets for AKS
-        if: ${{ github.event.inputs.k8sProvider == 'AKS' && github.event.inputs.secretsName != '' }}
-        env:
-          KUBECONFIG: "${{ github.workspace }}/kubeconfig"
-        run: .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.DOCKER_USER }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}"
 
 #   Deploy_to_EKS:
 #     runs-on: ubuntu-latest
