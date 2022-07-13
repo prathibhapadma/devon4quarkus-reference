@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 # Deploy apps in exists namespace, If not exists Create new namespace.
- kubectl create namespace "$1" --ignore-not-found
+kubectl get namespace | grep -q "^$1" || kubectl create namespace "$1"
 # Command to delete existed secrets.
 kubectl delete secret "$2" --namespace="$1" --ignore-not-found
 # Command to create secrets to pull image from private registry.
