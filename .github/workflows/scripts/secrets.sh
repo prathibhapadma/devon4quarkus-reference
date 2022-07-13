@@ -3,6 +3,8 @@ set -e
 namespaceStatus=$(kubectl get ns "$1" -o json | jq .status.phase -r)
 if [ $namespaceStatus != "Active" ]
 then
+    echo "Deploy apps"
+else
     echo "Create namespace"
     #Create namespace in cluster.
     kubectl create namespace "$1"
