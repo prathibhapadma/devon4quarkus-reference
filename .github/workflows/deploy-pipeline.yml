@@ -29,14 +29,14 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@master
         
-#       - name: Download artifact from AKS provision pipeline workflow
-#         uses: dawidd6/action-download-artifact@v2
-#         continue-on-error: true
-#         with:
-#           workflow: ${{ env.provisionPipeline }}
-#           check_artifacts:  true
-#           search_artifacts: true
-#           name: kubeconfig 
+      - name: Download artifact from AKS provision pipeline workflow
+        uses: dawidd6/action-download-artifact@v2
+        continue-on-error: true
+        with:
+          workflow: ${{ env.provisionPipeline }}
+          check_artifacts:  true
+          search_artifacts: true
+          name: kubeconfig 
           
       - name: Set EKS Environment Variables
         uses: tw3lveparsecs/github-actions-setvars@v0.1
