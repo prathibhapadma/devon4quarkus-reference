@@ -1,13 +1,7 @@
 #!/bin/bash
 set -e
 # Deploy apps in exists namespace, If not exists Create new namespace.
-namespaceStatus=$(kubectl get ns "$1" -o json | jq .status.phase -r)
-if [ $namespaceStatus == "Active" ] 
-then
-    echo "Deploy apps"
-else
-    kubectl create namespace "$1"
-fi
+ kubectl create namespace "$1" --ignore-not-found
 # Command to delete existed secrets.
 kubectl delete secret "$2" --namespace="$1" --ignore-not-found
 # Command to create secrets to pull image from private registry.
