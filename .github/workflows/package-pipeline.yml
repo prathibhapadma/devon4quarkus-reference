@@ -1,8 +1,8 @@
-name: package-pipeline
+name: package_workflow
 
 on:
   workflow_run:
-    workflows: quarkus-project-build
+    workflows: ci-pipeline-timothe
     types: completed
     branches:
       - release/*
@@ -12,15 +12,6 @@ on:
       relativeDockerfilePath:
         required: false
         default: src/main/docker/Dockerfile.native
-      imageTagFile:
-        required: false
-        default: pom.xml
-      region:
-        required: false
-        default: 
-      isECR:
-        required: false
-        default: $isECR
       targetPath:
         required: false
         default: ./target/
@@ -32,9 +23,6 @@ env:
   buildPipelineYamlName: 'build-pipeline.yml'
   ciPipelineYamlName: 'ci-pipeline.yml'
   relativeDockerfilePath: ${{ github.event.inputs.relativeDockerfilePath || 'src/main/docker/Dockerfile.native' }}
-  imageTagFile: ${{ github.event.inputs.imageTagFile || 'pom.xml' }}
-  region: ${{ github.event.inputs.region || '' }}
-  isECR: ${{ github.event.inputs.isECR || '$isECR' }}
   targetPath: ${{ github.event.inputs.targetPath || './target/' }}
 
 jobs:
@@ -47,16 +35,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.workflow_run.head_commit.id || github.sha }}
-          
-      - name: debug
-        run: echo ${{ github.event.workflow_run.head_branch || github.ref }}
 
       - name: Loading vars
         uses: tw3lveparsecs/github-actions-setvars@v0.1
         with:
           envFilePath: ".github/vars/*"
 
-      - name: Download artifact from build pipeline
+      - name: Download artifact from build workflow
         uses: dawidd6/action-download-artifact@v2
         id: downloadFromBuild
         continue-on-error: true
@@ -67,7 +52,7 @@ jobs:
           name: BuildOutput
           path: ${{ env.targetPath }}
 
-      - name: Download artifact from ci pipeline
+      - name: Download artifact from CI workflow
         uses: dawidd6/action-download-artifact@v2
         if: ${{ steps.downloadFromBuild.outcome == 'failure' }}
         with:
@@ -77,19 +62,22 @@ jobs:
           name: BuildOutput
           path: ${{ env.targetPath }}
 
+      - name: Extracting archive
+        run: tar -C ${{ env.targetPath }} -xf ./BuildOutput.tar
+
       - name: Build and push image to registry
-        run: .github/workflows/scripts/package.sh -f "$GITHUB_WORKSPACE/${{ env.relativeDockerfilePath }}" -t "$GITHUB_WORKSPACE/${{ env.imageTagFile }}" -c "$GITHUB_WORKSPACE" -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_PASSWORD }}"  -r "${{ env.registry }}" -i "${{ env.imageName }}" -b "${{ github.event.workflow_run.head_branch || github.ref }}"
+        run: .github/workflows/scripts/package.sh -f "$GITHUB_WORKSPACE/${{ env.relativeDockerfilePath }}" -c "$GITHUB_WORKSPACE" -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_PASSWORD }}"  -r "${{ env.registry }}" -i "${{ env.imageName }}" -b "${{ github.event.workflow_run.head_branch || github.ref }}"
         if: ${{ env.isECR != 'true' }}
 
       - name: Build and push image to registry (AWS)
-        run: .github/workflows/scripts/package.sh -f "$GITHUB_WORKSPACE/${{ env.relativeDockerfilePath }}" -t "$GITHUB_WORKSPACE/${{ env.imageTagFile }}" -c "$GITHUB_WORKSPACE" -a "${{ secrets.AWS_ACCESS_KEY }}" -s "${{ secrets.AWS_SECRET_ACCESS_KEY }}" -l "${{ env.region }}" -r "${{ env.registry }}" -i "${{ env.imageName }}" -b "${{ github.event.workflow_run.head_branch || github.ref }}"
+        run: .github/workflows/scripts/package.sh -f "$GITHUB_WORKSPACE/${{ env.relativeDockerfilePath }}" -c "$GITHUB_WORKSPACE" -a "${{ secrets.AWS_ACCESS_KEY }}" -s "${{ secrets.AWS_SECRET_ACCESS_KEY }}" -l "${{ env.region }}" -r "${{ env.registry }}" -i "${{ env.imageName }}" -b "${{ github.event.workflow_run.head_branch || github.ref }}"
         if: ${{ env.isECR == 'true' }}
 
 # mark to insert step for additional artifact #
   on-failure:
-    name: Ci Pipeline Failed
+    name: CI Workflow Failed
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
-      - name: Cancel Pipeline
+      - name: Cancel Workflow
         uses: andymckay/cancel-action@0.2
