@@ -40,6 +40,7 @@ jobs:
         id: publishdns
         run: |   
           cd .github
+          [[ -f vars ]] || mkdir vars
           ls -lrta | grep -q "^${{ env.path }}" | mkdir "${{ env.path }}"
           cd vars
           ls -lrta | grep -q "^${{ env.common-k8s-variables }}" || touch "${{ env.common-k8s-variables }}"
