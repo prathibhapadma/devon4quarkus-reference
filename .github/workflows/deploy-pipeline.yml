@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@master
       - name: get tagename
         run: |
-          branch: "${{ github.event.workflow_run.head_branch || github.ref }}"
+          branch="${{ github.event.workflow_run.head_branch || github.ref }}"
           
           # (File was renamed from '${language}-package.sh' to package-extra.sh in ./package-pipeline.cfg)
           . "$(dirname "$0")/package-extra.sh"
