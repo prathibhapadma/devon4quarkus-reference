@@ -26,12 +26,12 @@ jobs:
     name: Provisioning AKS
     runs-on: ubuntu-latest
     steps:     
-#       - name: login cli
-#         run: |
-#           az login -u "${{ secrets.AZURE_USERNAME }}" -p "${{ secrets.AZURE_PASSWORD }}"
+      - name: login cli
+        run: |
+          az login -u "${{ secrets.AZURE_USERNAME }}" -p "${{ secrets.AZURE_PASSWORD }}"
                    
-#       - name: Checkout Repository
-#         uses: actions/checkout@master
+      - name: Checkout Repository
+        uses: actions/checkout@master
     
 #       - name: Terraform - Init
 #         id: init
