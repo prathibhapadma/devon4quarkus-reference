@@ -20,7 +20,7 @@ env:
   k8sNamespace: "test1" 
   provisionPipeline: "aks-provisioning.yml"
   ciPipelineYamlName: "ciPipelineYamlName.yml"
-  tag: "image123"
+#  tag: "image123"
 
 jobs:
   Deploy_to_AKS:
