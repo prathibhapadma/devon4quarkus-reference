@@ -37,10 +37,10 @@ jobs:
         if: ${{ github.event.inputs.cluster_operation == 'create' }}
         id: publishdns
         run: |   
-          cd .github
+          cd .github        
+          cd vars
           rm -rf "vars1"
           ls -lrta
-          cd vars
           mkdir -p "vars1"
           ls -lrta
           cd "vars1"
