@@ -77,6 +77,7 @@ jobs:
           cd .github
           mkdir -p vars
           cd vars
+          ls -lrta
           touch "common-k8s-variables.env"
           echo "dns_name=${{ steps.obtaindns.outputs.dnsname }}" >> common-k8s-variables.env
           cat common-k8s-variables.env
