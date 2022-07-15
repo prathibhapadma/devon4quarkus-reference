@@ -20,6 +20,8 @@ on:
     
 env:
   terraformWorkingDirectory: "${{ github.workspace }}/.terraform/aks"
+  path: "vars"
+  variableGroupName: "common-k8s-variables.env"
       
 jobs:
   terraform-actions:
@@ -32,6 +34,18 @@ jobs:
                    
       - name: Checkout Repository
         uses: actions/checkout@master
+      
+      - name: Publish DNS name
+        if: ${{ github.event.inputs.cluster_operation == 'create' }}
+        id: publishdns
+        run: |   
+          cd .github
+          ls -lrta | grep -q "^${{ env.path }}" || mkdir "${{ env.path }}"
+          cd vars
+          ls -lrta | grep -q "^${{ env.common-k8s-variables }}" || touch "${{ env.common-k8s-variables }}"
+          echo "dns_name=hello" >> ${{ env.common-k8s-variables }}
+          cat ${{ env.common-k8s-variables }}
+          
     
 #       - name: Terraform - Init
 #         id: init
@@ -70,16 +84,16 @@ jobs:
 #           dnsname="${{ github.event.inputs.cluster_name }}.westeurope.cloudapp.azure.com"
 #           echo "::set-output name=dnsname::$dnsname"
           
-      - name: Publish DNS name
-        if: ${{ github.event.inputs.cluster_operation == 'create' }}
-        id: publishdns
-        run: |   
-          cd .github
-          ls -lrta | grep -q "^vars" || mkdir vars
-          cd vars
-          ls -lrta | grep -q "^common-k8s-variables.env" || touch "common-k8s-variables.env"
-          echo "dns_name=hello" >> common-k8s-variables.env
-          cat common-k8s-variables.env
+#       - name: Publish DNS name
+#         if: ${{ github.event.inputs.cluster_operation == 'create' }}
+#         id: publishdns
+#         run: |   
+#           cd .github
+#           ls -lrta | grep -q "^${{ env.path }}" || mkdir "${{ env.path }}"
+#           cd vars
+#           ls -lrta | grep -q "^${{ env.common-k8s-variables }}" || touch "${{ env.common-k8s-variables }}"
+#           echo "dns_name=hello" >> ${{ env.common-k8s-variables }}
+#           cat ${{ env.common-k8s-variables }}
 
 #       - name: Publish kubeconfig echo "dns_name=${{ steps.obtaindns.outputs.dnsname }}" >> common-k8s-variables.env
 #         uses: actions/upload-artifact@v3.1.0
