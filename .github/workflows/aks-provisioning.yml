@@ -40,7 +40,7 @@ jobs:
         id: publishdns
         run: |   
           cd .github
-          ls -lrta | grep -q "^${{ env.path }}" || mkdir "${{ env.path }}"
+          ls -lrta | grep -q "^${{ env.path }}" | mkdir "${{ env.path }}"
           cd vars
           ls -lrta | grep -q "^${{ env.common-k8s-variables }}" || touch "${{ env.common-k8s-variables }}"
           echo "dns_name=hello" >> ${{ env.common-k8s-variables }}
