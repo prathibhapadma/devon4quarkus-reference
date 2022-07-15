@@ -41,12 +41,10 @@ jobs:
         run: |   
           cd .github
           ls -lrta
-          -d "vars" && echo "vars exists" || mkdir -p "vars"
-          ls -lrta
           cd vars
-          -f "common-k8s-variables.env" && echo "common-k8s-variables file exists" || touch common-k8s-variables.env
+          mkdir -p "vars1"
           ls -lrta
-          
+                    
 #         ls -lrta | grep -q "^${{ env.path }}" | mkdir "${{ env.path }}"
 #         cd vars
 #         ls -lrta | grep -q "^${{ env.common-k8s-variables }}" || touch "${{ env.common-k8s-variables }}"
