@@ -47,9 +47,9 @@ jobs:
           # We change the name of the tag depending if it is a release or another branch
           echo "$branch" | grep release && tag_completed="${tag}"
           echo "$branch" | grep release || tag_completed="${tag}_${branch_short}"
-          echo "tttttttttt ${tag}"
-          echo "bbbbb ${tag}_${branch_short}"
-          echo "tag $tag_completed"
+          echo "tag ${tag}"
+          echo "branch_tag ${tag}_${branch_short}"
+          echo "tag_completed $tag_completed"
 
 #       - name: Download artifact from AKS provision pipeline workflow
 #         uses: dawidd6/action-download-artifact@v2
