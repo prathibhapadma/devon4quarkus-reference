@@ -20,9 +20,9 @@ on:
         default: ''
         
 env:
-  deploymentYamlPath: "./k8s/application-deployment.yaml" 
-  ingressYamlPath: "./k8s/ingress.yaml"  
-  deployFilesPath: "./k8s"
+  deploymentYamlPath: "${{ github.workspace }}/k8s/application-deployment.yaml" 
+  ingressYamlPath: "${{ github.workspace }}/k8s/ingress.yaml"  
+  deployFilesPath: "${{ github.workspace }}/k8s"
   k8sNamespace: "test" 
   provisionPipeline: "aks-provisioning.yml"
   packageWorkflow: "package-pipeline.yml"
