@@ -26,7 +26,7 @@ env:
   k8sNamespace: "test" 
   provisionPipeline: "aks-provisioning.yml"
   packageWorkflow: "package-pipeline.yml"
-  path: ".github/workflows/scripts/package-extra.sh"
+  path: "./.github/workflows/scripts/package-extra.sh"
 
 jobs:
   Deploy_to_AKS:
