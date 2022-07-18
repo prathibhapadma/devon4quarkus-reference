@@ -53,12 +53,12 @@ jobs:
         run: terraform apply -destroy -var 'cluster_name=${{ github.event.inputs.cluster_name }}' --auto-approve
         continue-on-error: false	
     
-#       - name: Install nginx-ingress controller
-#         if: ${{ github.event.inputs.cluster_operation == 'create' }}
-#         id: installnginx
-#         env:
-#           KUBECONFIG: "${{ env.terraformWorkingDirectory }}/kubeconfig"
-#         run: .github/workflows/scripts/install-nginx-ingress.sh
+      - name: Install nginx-ingress controller
+        if: ${{ github.event.inputs.cluster_operation == 'create' }}
+        id: installnginx
+        env:
+          KUBECONFIG: "${{ env.terraformWorkingDirectory }}/kubeconfig"
+        run: .github/workflows/scripts/install-nginx-ingress.sh
             
       - name: Obtain DNS name
         if: ${{ github.event.inputs.cluster_operation == 'create' }}
@@ -97,10 +97,10 @@ jobs:
           default_author: github_actions
           cwd: '.github/vars/'
 
-#       - name: Install Rancher
-#         if: ${{ github.event.inputs.install_rancher == 'true' && github.event.inputs.cluster_operation == 'create'}}
-#         id: installrancher
-#         env:
-#           KUBECONFIG: "${{ env.terraformWorkingDirectory }}/kubeconfig"
-#         run: .github/workflows/scripts/install-rancher.sh ${{ steps.obtaindns.outputs.dnsname }}       
+      - name: Install Rancher
+        if: ${{ github.event.inputs.install_rancher == 'true' && github.event.inputs.cluster_operation == 'create'}}
+        id: installrancher
+        env:
+          KUBECONFIG: "${{ env.terraformWorkingDirectory }}/kubeconfig"
+        run: .github/workflows/scripts/install-rancher.sh ${{ steps.obtaindns.outputs.dnsname }}       
      
