@@ -17,7 +17,7 @@ on:
       secretsName:
         description: 'ImagePullSecret Name.'
         type: string
-        default: 'acr'
+        default: ''
 
 env:
   deploymentYamlPath: "${{ github.workspace }}/k8s/application-deployment.yaml" 
