@@ -30,7 +30,8 @@ env:
 jobs:
   Deploy_to_AKS:
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.k8sProvider == 'AKS' || github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    #if: ${{ github.event.inputs.k8sProvider == 'AKS' || github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event.inputs.k8sProvider == 'AKS' }}
     steps:
       - name: Checkout the repository
         uses: actions/checkout@master
@@ -63,7 +64,8 @@ jobs:
       
   Deploy_to_EKS:
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.k8sProvider == 'EKS' || github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    #if: ${{ github.event.inputs.k8sProvider == 'EKS' || github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event.inputs.k8sProvider == 'EKS' }}
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3 
