@@ -55,6 +55,8 @@ jobs:
           docker images
           docker ps -a
           docker image pull ultimatom/package_github_docker:$tag_completed
+          docker ps -a
+          docker images
           
 #       - name: Download artifact from AKS provision pipeline workflow
 #         uses: dawidd6/action-download-artifact@v2
