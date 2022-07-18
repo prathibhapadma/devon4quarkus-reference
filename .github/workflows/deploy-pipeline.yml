@@ -26,7 +26,7 @@ env:
   k8sNamespace: "test1" 
   provisionPipeline: "aks-provisioning.yml"
   packageWorkflow: "package-pipeline.yml"
-  path: ".github/workflows/scripts/package-extra.sh"
+  path: "${{ github.workspace }}/workflows/scripts/package-extra.sh"
 
 jobs:
   Deploy_to_AKS:
@@ -36,42 +36,42 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@master
         
-#       - name: Download artifact from AKS provision pipeline workflow
-#         uses: dawidd6/action-download-artifact@v2
-#         continue-on-error: true
-#         with:
-#           workflow: ${{ env.provisionPipeline }}
-#           check_artifacts:  true
-#           search_artifacts: true
-#           name: kubeconfig 
+      - name: Download artifact from AKS provision pipeline workflow
+        uses: dawidd6/action-download-artifact@v2
+        continue-on-error: true
+        with:
+          workflow: ${{ env.provisionPipeline }}
+          check_artifacts:  true
+          search_artifacts: true
+          name: kubeconfig 
           
       - name: Set EKS Environment Variables
         uses: tw3lveparsecs/github-actions-setvars@v0.1
         with:
           envFilePath: ".github/vars/*"
           
-#       - name: cat secrets
-#         run: |
-#           echo "DOCKER_USER ${{ secrets.DOCKER_USER }}"
-#           echo "DOCKER_PASSWORD ${{ secrets.DOCKER_PASSWORD }}"
+      - name: cat secrets
+        run: |
+          echo "DOCKER_USER ${{ secrets.DOCKER_USER }}"
+          echo "DOCKER_PASSWORD ${{ secrets.DOCKER_PASSWORD }}"
           
-#       - name: Create secrets for AKS
-#         if: ${{ github.event.inputs.k8sProvider == 'AKS' && github.event.inputs.secretsName != '' }}
-#         env:
-#           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
-#         run: .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.DOCKER_USER }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}" 
+      - name: Create secrets for AKS
+        if: ${{ github.event.inputs.k8sProvider == 'AKS' && github.event.inputs.secretsName != '' }}
+        env:
+          KUBECONFIG: "${{ github.workspace }}/kubeconfig"
+        run: .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.DOCKER_USER }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}" 
      
       - name: Deploy app to AKS  
         env:
           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
         run: .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.tag }}" "${{ env.dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}" "${{ env.path }}"
         
-#       - name: list pods
-#         env:
-#           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
-#         run: |
-#           kubectl get all -n "${{ env.k8sNamespace }}"
-#           kubectl get svc -n nginx-ingress
+      - name: list pods
+        env:
+          KUBECONFIG: "${{ github.workspace }}/kubeconfig"
+        run: |
+          kubectl get all -n "${{ env.k8sNamespace }}"
+          kubectl get svc -n nginx-ingress
           
 #   Deploy_to_EKS:
 #     runs-on: ubuntu-latest
