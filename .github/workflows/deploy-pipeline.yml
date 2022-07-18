@@ -1,6 +1,12 @@
 name: quarkus-project-deploy
 
 on:
+  workflow_run:
+    workflows: deploy-pipeline-review
+    types: completed
+    branches:
+      - release/*
+      - develop
   workflow_dispatch:
     inputs:
       k8sProvider:
@@ -11,96 +17,88 @@ on:
       secretsName:
         description: 'ImagePullSecret Name.'
         type: string
-        default: ''
-        
+        default: 'acr'
+
 env:
   deploymentYamlPath: "${{ github.workspace }}/k8s/application-deployment.yaml" 
   ingressYamlPath: "${{ github.workspace }}/k8s/ingress.yaml"  
   deployFilesPath: "${{ github.workspace }}/k8s"
-  k8sNamespace: "test1" 
-  provisionPipeline: "aks-provisioning.yml"
-  ciPipelineYamlName: "ciPipelineYamlName.yml"
-  tag: "image123"
+  provisionPipeline: "aks-provisioning.yml.yml"
+  packagePipelineName: "deploy-pipeline-review.yml"
+  path: "./.github/workflows/scripts/package-extra.sh"
 
 jobs:
   Deploy_to_AKS:
     runs-on: ubuntu-latest
+    # if: ${{ github.event.inputs.k8sProvider == 'AKS' || github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     if: ${{ github.event.inputs.k8sProvider == 'AKS' }}
     steps:
       - name: Checkout the repository
         uses: actions/checkout@master
         
-#       - name: Download artifact from AKS provision pipeline workflow
-#         uses: dawidd6/action-download-artifact@v2
-#         continue-on-error: true
-#         with:
-#           workflow: ${{ env.provisionPipeline }}
-#           check_artifacts:  true
-#           search_artifacts: true
-#           name: kubeconfig 
-          
-      - name: Set EKS Environment Variables
-        uses: tw3lveparsecs/github-actions-setvars@v0.1
+      - name: Download artifact from AKS provision pipeline workflow
+        uses: dawidd6/action-download-artifact@v2
+        continue-on-error: true
         with:
-          envFilePath: ".github/vars/*"
-          
-      - name: cat secrets
-        run: |
-          echo "DOCKER_USER ${{ secrets.DOCKER_USER }}"
-          echo "DOCKER_PASSWORD ${{ secrets.DOCKER_PASSWORD }}"
-          
+          workflow: ${{ env.provisionPipeline }}
+          check_artifacts:  true
+          search_artifacts: true
+          name: kubeconfig 
+
       - name: Create secrets for AKS
         if: ${{ github.event.inputs.k8sProvider == 'AKS' && github.event.inputs.secretsName != '' }}
         env:
           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
         run: .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.DOCKER_USER }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}" 
-     
+   
+      - name: Set EKS Environment Variables
+        uses: tw3lveparsecs/github-actions-setvars@v0.1
+        with:
+          envFilePath: ".github/vars/*"
+          
       - name: Deploy app to AKS  
         env:
           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
-        run: .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.tag }}" "${{ env.dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}" 
-        
-#       - name: list pods
-#         env:
-#           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
-#         run: |
-#           kubectl get all -n "${{ env.k8sNamespace }}"
-#           kubectl get svc -n nginx-ingress
+        run: .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}" "${{ env.path }}"
           
-#   Deploy_to_EKS:
-#     runs-on: ubuntu-latest
-#     if: ${{ github.event.inputs.k8sProvider == 'EKS' }} 
-#     steps:
-#       - name: Checkout the repository
-#         uses: actions/checkout@v3 
-        
-#       - name: Set EKS Environment Variables
-#         uses: tw3lveparsecs/github-actions-setvars@v0.1
-#         with:
-#           envFilePath: ".github/vars/*"
-
-#       - name: Configure AWS Credentials
-#         uses: aws-actions/configure-aws-credentials@v1
-#         with:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           aws-region: ${{ env.aws_region }}
       
-#       - name: Create secrets for EKS
-#         if: ${{ github.event.inputs.k8sProvider == 'EKS' && github.event.inputs.secretsName != '' }}
-#         run: |
-#           aws eks update-kubeconfig --name ${{ env.cluster_name }} --region ${{ env.aws_region }}
-#           .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.AWS_ACCESS_KEY_ID }}" "${{ secrets.AWS_SECRET_ACCESS_KEY }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}"
-
-#       - name: Deploy app to EKS 
-#         run: |
-#           aws eks update-kubeconfig --name ${{ env.cluster_name }} --region ${{ env.aws_region }}
-#           .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.tag }}" "${{ env.dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}"  
+  Deploy_to_EKS:
+    runs-on: ubuntu-latest
+    # if: ${{ github.event.inputs.k8sProvider == 'EKS' || github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event.inputs.k8sProvider == 'EKS' }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3 
       
-#       - name: list pods
-#         env:
-#           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
-#         run: |
-#           kubectl get all -n "${{ env.k8sNamespace }}"
-#           kubectl get svc -n nginx-ingress
-          
+      - name: Set EKS Environment Variables
+        uses: tw3lveparsecs/github-actions-setvars@v0.1
+        with:
+          envFilePath: ".github/vars/*"
+
+      - name: Create secrets for EKS
+        if: ${{ github.event.inputs.k8sProvider == 'EKS' && github.event.inputs.secretsName != '' }}
+        run: |
+          aws eks update-kubeconfig --name ${{ env.cluster_name }} --region ${{ env.aws_region }}
+          .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.AWS_ACCESS_KEY_ID }}" "${{ secrets.AWS_SECRET_ACCESS_KEY }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}"
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.aws_region }}
+
+      - name: Deploy app to EKS 
+        run: |
+          aws eks update-kubeconfig --name ${{ env.cluster_name }} --region ${{ env.aws_region }}
+          .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}"  
+
+  # mark to insert step for additional artifact #
+  on-failure:
+    name: CI Workflow Failed
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: Cancel Workflow
+        uses: andymckay/cancel-action@0.2             
+  
