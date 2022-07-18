@@ -50,20 +50,20 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           ls -lrta
-        
+      
+      - name: Set EKS Environment Variables
+        uses: tw3lveparsecs/github-actions-setvars@v0.1
+        with:
+          envFilePath: ".github/vars/*"
+          
       - name: Create secrets for AKS
         if: ${{ github.event.inputs.k8sProvider == 'AKS' && github.event.inputs.secretsName != '' }}
         env:
           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
         run: |
           kubectl get ns
-          .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.DOCKER_USER }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}" 
-   
-      - name: Set EKS Environment Variables
-        uses: tw3lveparsecs/github-actions-setvars@v0.1
-        with:
-          envFilePath: ".github/vars/*"
-          
+          .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.DOCKER_USER }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}"          
+     
       - name: Deploy app to AKS  
         env:
           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
