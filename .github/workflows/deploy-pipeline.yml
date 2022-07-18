@@ -26,6 +26,7 @@ env:
   provisionPipeline: "aks-provisioning.yml"
   packagePipelineName: "deploy-pipeline-review.yml"
   path: "./.github/workflows/scripts/package-extra.sh"
+  k8sNamespace: "test"
 
 jobs:
   Deploy_to_AKS:
