@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 branch="$8"
-source "$8"
+source "./.github/workflows/scripts/package-extra.sh"
 echo "tag: ${tag}"
 # Add image name and ingress DNS name.
 export image="$2" tag="${tag}" dns="$4" 
