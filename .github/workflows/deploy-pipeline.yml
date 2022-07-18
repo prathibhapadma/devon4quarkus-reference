@@ -39,7 +39,7 @@ jobs:
           branch="${{ github.event.workflow_run.head_branch || github.ref }}"
           
           # (File was renamed from '${language}-package.sh' to package-extra.sh in ./package-pipeline.cfg)
-          .github/workflows/scripts/package-extra.sh
+          ..github/workflows/scripts/package-extra.sh
 
           # we get what is located after the last '/' in the branch name, so it removes /ref/head or /ref/head/<folder> if your branche is named correctly"
           branch_short=$(echo "$branch" | awk -F '/' '{ print $NF }')
@@ -48,6 +48,7 @@ jobs:
           echo "$branch" | grep release && tag_completed="${tag}"
           echo "$branch" | grep release || tag_completed="${tag}_${branch_short}"
           
+          echo "branch :$branch"
           echo "tag: ${tag}"
           echo "branch_name: ${tag}_${branch_short}"
           echo "final_tag: $tag_completed"
