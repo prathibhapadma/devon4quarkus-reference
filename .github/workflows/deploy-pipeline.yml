@@ -49,7 +49,9 @@ jobs:
         if: ${{ github.event.inputs.k8sProvider == 'AKS' && github.event.inputs.secretsName != '' }}
         env:
           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
-        run: .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.DOCKER_USER }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}" 
+        run: |
+          kubectl get ns
+          .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.DOCKER_USER }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}" 
    
       - name: Set EKS Environment Variables
         uses: tw3lveparsecs/github-actions-setvars@v0.1
