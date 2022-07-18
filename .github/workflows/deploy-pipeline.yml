@@ -37,14 +37,8 @@ jobs:
       - name: get tagename
         run: |
           branch="${{ github.event.workflow_run.head_branch || github.ref }}"
-          
-          # (File was renamed from '${language}-package.sh' to package-extra.sh in ./package-pipeline.cfg)
-          ./.github/workflows/scripts/package-extra.sh
-
-          # we get what is located after the last '/' in the branch name, so it removes /ref/head or /ref/head/<folder> if your branche is named correctly"
+          source ./.github/workflows/scripts/package-extra.sh
           branch_short=$(echo "$branch" | awk -F '/' '{ print $NF }')
-
-          # We change the name of the tag depending if it is a release or another branch
           echo "$branch" | grep release && tag_completed="${tag}"
           echo "$branch" | grep release || tag_completed="${tag}_${branch_short}"
           
