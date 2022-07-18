@@ -51,7 +51,11 @@ jobs:
           echo "tag: ${tag}"
           echo "branch_name: ${tag}_${branch_short}"
           echo "final_tag: $tag_completed"
-
+          
+          docker images
+          docker ps -a
+          docker image pull ultimatom/package_github_docker:$tag_completed
+          
 #       - name: Download artifact from AKS provision pipeline workflow
 #         uses: dawidd6/action-download-artifact@v2
 #         continue-on-error: true
