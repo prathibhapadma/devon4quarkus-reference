@@ -34,25 +34,7 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@master
-      - name: get tagename
-        run: |
-          branch="${{ github.event.workflow_run.head_branch || github.ref }}"
-          source ./.github/workflows/scripts/package-extra.sh
-          branch_short=$(echo "$branch" | awk -F '/' '{ print $NF }')
-          echo "$branch" | grep release && tag_completed="${tag}"
-          echo "$branch" | grep release || tag_completed="${tag}_${branch_short}"
-          
-          echo "branch :$branch"
-          echo "tag: ${tag}"
-          echo "branch_name: ${tag}_${branch_short}"
-          echo "final_tag: $tag_completed"
-          
-          docker images
-          docker ps -a
-          docker image pull ultimatom/package_github_docker:$tag_completed
-          docker ps -a
-          docker images
-          
+        
 #       - name: Download artifact from AKS provision pipeline workflow
 #         uses: dawidd6/action-download-artifact@v2
 #         continue-on-error: true
@@ -78,10 +60,10 @@ jobs:
 #           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
 #         run: .github/workflows/scripts/secrets.sh "${{ env.k8sNamespace }}" "${{ github.event.inputs.secretsName }}" "${{ secrets.DOCKER_USER }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ env.registry }}" "${{ env.deploymentYamlPath }}" 
      
-#       - name: Deploy app to AKS  
-#         env:
-#           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
-#         run: .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.tag }}" "${{ env.dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}" 
+      - name: Deploy app to AKS  
+        env:
+          KUBECONFIG: "${{ github.workspace }}/kubeconfig"
+        run: .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.tag }}" "${{ env.dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}" "${{ github.event.workflow_run.head_branch || github.ref }}"
         
 #       - name: list pods
 #         env:
