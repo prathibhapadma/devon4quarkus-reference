@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 # Add image name and ingress DNS name.
-source "$7"
+# source "$7"
+. "$7"
 export image="$2" tag="${tag}" dns="$3"
 echo "$tag"
 yq eval '.spec.template.spec.containers[0].image = "'"$image:$tag"'"' -i "$4"
