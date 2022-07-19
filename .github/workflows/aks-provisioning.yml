@@ -17,7 +17,11 @@ on:
         required: false
         type: string
         default: create
-    
+        
+permissions:
+  actions: write
+  contents: read
+  
 env:
   terraformWorkingDirectory: "${{ github.workspace }}/.terraform/aks"
       
