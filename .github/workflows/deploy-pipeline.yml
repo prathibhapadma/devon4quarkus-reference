@@ -25,7 +25,7 @@ env:
   deployFilesPath: "${{ github.workspace }}/k8s"
   provisionPipeline: "aks-provisioning.yml"
   packagePipelineName: "deploy-pipeline-review.yml"
-  path: "./.github/workflows/scripts/package-extra.sh"
+  path: ".github/workflows/scripts/package-extra.sh"
   k8sNamespace: "test"
 
 jobs:
