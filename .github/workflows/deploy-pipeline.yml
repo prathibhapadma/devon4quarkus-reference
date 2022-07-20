@@ -71,8 +71,7 @@ jobs:
       - name: Deploy app to AKS  
         env:
           KUBECONFIG: "${{ github.workspace }}/kubeconfig"
-        run: .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.aks_dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}" "${{ env.path }}"
-          
+        run: .github/workflows/scripts/deploy.sh "${{ env.k8sNamespace }}" "${{ env.imageName }}" "${{ env.aks_dns_name }}" "${{ env.deploymentYamlPath }}" "${{ env.ingressYamlPath }}" "${{ env.deployFilesPath }}" "${{ env.path }}" "${{ github.event.workflow_run.head_branch || github.ref }}"          
       
 #   Deploy_to_EKS:
 #     runs-on: ubuntu-latest
