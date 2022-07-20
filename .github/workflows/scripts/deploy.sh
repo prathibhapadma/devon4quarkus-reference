@@ -8,11 +8,11 @@ set -e
 branch_short=$(echo "$8" | awk -F '/' '{ print $NF }')
 
 # We change the name of the tag depending if it is a release or another branch
-echo "$8" | grep release && tag_completed="${tag}"
-echo "$8" | grep release || tag_completed="${tag}_${branch_short}"
+echo "tag_completed: $8" | grep release && tag_completed="${tag}"
+echo "tag_completed_branch: $8" | grep release || tag_completed="${tag}_${branch_short}"
 
 export image="$2" tag="${tag}" dns="$3"
-echo "$tag"
+echo "tag:$tag"
 yq eval '.spec.template.spec.containers[0].image = "'"$image:$tag"'"' -i "$4"
 cat $4
 yq eval '.spec.rules[0].host = "'"$dns"'"' -i "$5"
