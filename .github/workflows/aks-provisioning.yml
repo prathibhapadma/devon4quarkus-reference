@@ -30,12 +30,12 @@ jobs:
     name: Provisioning AKS
     runs-on: ubuntu-latest
     steps:     
-#    - name: login cli
-#       run: |
-#          az login 
+    - name: login cli
+      run: |
+         az login -u "prathibha.padma@capgemini.com" -p "Capgemini@123"
                             
-      - name: Checkout Repository
-        uses: actions/checkout@master       
+    - name: Checkout Repository
+      uses: actions/checkout@master       
                     
 #       - name: Terraform - Init
 #         id: init
@@ -74,17 +74,17 @@ jobs:
 #           dnsname="${{ github.event.inputs.cluster_name }}.westeurope.cloudapp.azure.com"
 #           echo "::set-output name=dnsname::$dnsname"
           
-      - name: Publish DNS name
-        if: ${{ github.event.inputs.cluster_operation == 'create' }}
-        id: publishdns
-        run: |   
-          cd .github
-          mkdir -p vars
-          cd vars
-          ls -lrta
-          touch "common-k8s-variables.env"
-          echo "aks_dns_name=devon-hangar-test.westeurope.cloudapp.azure.com" >> common-k8s-variables.env
-          cat common-k8s-variables.env
+#       - name: Publish DNS name
+#         if: ${{ github.event.inputs.cluster_operation == 'create' }}
+#         id: publishdns
+#         run: |   
+#           cd .github
+#           mkdir -p vars
+#           cd vars
+#           ls -lrta
+#           touch "common-k8s-variables.env"
+#           echo "aks_dns_name=devon-hangar-test.westeurope.cloudapp.azure.com" >> common-k8s-variables.env
+#           cat common-k8s-variables.env
           
 #       echo "aks_dns_name=${{ steps.obtaindns.outputs.dnsname }}" >> common-k8s-variables.env
 #       - name: Publish kubeconfig echo 
