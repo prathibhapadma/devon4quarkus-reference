@@ -33,9 +33,7 @@ jobs:
     - name: login cli
       run: |
          az login -u "${{ secrets.AZURE_USERNAME }}" -p "${{ secrets.AZURE_PASSWORD }}" 
-         
- # "prathibha.padma@capgemini.com" -p "Capgemini@123"
-                            
+                                    
     - name: Checkout Repository
       uses: actions/checkout@master       
                     
