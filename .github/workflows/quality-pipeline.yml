@@ -6,13 +6,13 @@ on:
     inputs:
       sonarUrl:
         required: false
-        default: $sonarUrl
+        default: http://54.220.247.102:9000/
       sonarToken:
         required: false
         default:
       targetPath:
         required: false
-        default: $targetDirectory
+        default: ./target
 # mark to insert additional artifact input #
 
 env:
@@ -69,7 +69,7 @@ jobs:
       - name: SonarQube analysis
         run: .github/workflows/scripts/quality.sh
         env:
-          SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_URL: ${{ env.sonarUrl }}
           PROJECT_PATH: .
 
