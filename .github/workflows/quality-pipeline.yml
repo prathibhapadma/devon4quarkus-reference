@@ -1,7 +1,6 @@
 name: quality-pipeline
 
 on:
-  workflow_call:
   workflow_dispatch:
     inputs:
       sonarUrl:
