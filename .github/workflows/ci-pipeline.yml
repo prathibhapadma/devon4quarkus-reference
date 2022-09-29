@@ -1,8 +1,9 @@
 name: ci_workflow
 
-# on:
-#   push:
-
+on:
+  #workflow_call:
+  workflow_dispatch:
+  
 permissions:
   actions: write
   contents: read
