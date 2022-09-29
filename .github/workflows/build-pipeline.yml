@@ -1,0 +1,37 @@
+name: build_workflow
+
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      targetPath:
+        description: 'Target directory of build process.'
+        required: false
+        type: string
+        default: './'
+
+
+env:
+  targetPath: ${{ github.event.inputs.targetPath || './' }}
+
+
+jobs:
+  Build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Build the application
+        run: .github/workflows/scripts/build.sh
+
+      - name: Archiving artifact
+        run: pwd;ls -l;tar -cvf ./BuildOutput.tar -C ${{ env.targetPath }}/ .
+
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: BuildOutput
+          path: ./BuildOutput.tar
