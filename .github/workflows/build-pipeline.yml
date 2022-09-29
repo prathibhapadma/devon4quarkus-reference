@@ -1,7 +1,6 @@
 name: build_workflow
 
 on:
-  workflow_call:
   workflow_dispatch:
     inputs:
       targetPath:
