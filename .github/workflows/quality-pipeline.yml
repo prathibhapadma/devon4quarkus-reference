@@ -1,18 +1,17 @@
-name: quality-pipeline
+name: quality
 
 on:
-  #workflow_call:
   workflow_dispatch:
     inputs:
       sonarUrl:
         required: false
-        default: http://54.220.247.102:9000/
+        default: 'http://54.220.247.102:9000/'
       sonarToken:
         required: false
-        default:
+        default: '${{ secrets.SONAR_TOKEN }}'
       targetPath:
         required: false
-        default: ./target
+        default: './target'
 # mark to insert additional artifact input #
 
 env:
