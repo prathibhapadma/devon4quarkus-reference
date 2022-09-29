@@ -3,17 +3,21 @@ name: build_workflow
 on:
   workflow_call:
   workflow_dispatch:
-    inputs:
-      targetPath:
-        description: 'Target directory of build process.'
+    inputs:  
+    sonarUrl:
         required: false
-        type: string
-        default: './'
-
-
+        default: http://54.220.247.102:9000/
+      sonarToken:
+        required: false
+        default:
+      targetPath:
+        required: false
+        default: ./
+        
 env:
   targetPath: ${{ github.event.inputs.targetPath || './' }}
-
+  sonarUrl: ${{ github.event.inputs.sonarUrl || 'http://54.220.247.102:9000/' }}
+  sonarToken: ${{ github.event.inputs.sonarToken || secrets.SONARQUBE_TOKEN }}
 
 jobs:
   Build:
@@ -35,3 +39,33 @@ jobs:
         with:
           name: BuildOutput
           path: ./BuildOutput.tar
+          
+      - name: Download artifact from build job (current workflow)
+        uses: actions/download-artifact@v2
+        id: dowloadFromSamePipeline
+        continue-on-error: true
+        with:
+          name: BuildOutput
+          path: ${{ env.targetPath }}
+
+      - name: Download artifact from build workflow
+        uses: dawidd6/action-download-artifact@v2
+        id: downloadFromBuild
+        continue-on-error: true
+        if: ${{ steps.dowloadFromSamePipeline.outcome == 'failure' }}
+        with:
+          workflow: ${{ env.buildPipelineYamlName }}
+          commit: ${{ github.sha }}
+          check_artifacts:  true
+          name: BuildOutput
+          path: ${{ env.targetPath }}
+          
+      - name: Extracting archive
+        run: tar -C ${{ env.targetPath }} -xf ${{ env.targetPath }}/BuildOutput.tar
+
+      - name: SonarQube analysis
+        run: .github/workflows/scripts/quality.sh
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_URL: ${{ env.sonarUrl }}
+          PROJECT_PATH: .    
