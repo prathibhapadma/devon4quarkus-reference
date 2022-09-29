@@ -8,7 +8,7 @@ on:
         default: 'http://54.220.247.102:9000/'
       sonarToken:
         required: false
-        default: '${{ secrets.SONAR_TOKEN }}'
+        default: 
       targetPath:
         required: false
         default: './target'
