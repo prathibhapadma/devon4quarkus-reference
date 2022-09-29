@@ -4,7 +4,7 @@ on:
   workflow_call:
   workflow_dispatch:
     inputs:  
-    sonarUrl:
+      sonarUrl:
         required: false
         default: http://54.220.247.102:9000/
       sonarToken:
