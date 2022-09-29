@@ -1,0 +1,15 @@
+name: ci_workflow
+
+on:
+  push:
+
+permissions:
+  actions: write
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  node_build_workflow:
+    uses: ./.github/workflows/build-pipeline.yml
