@@ -1,7 +1,7 @@
 name: quality_workflow
 
 on:
-  #workflow_call:
+  workflow_call:
   workflow_dispatch:
     inputs:
       sonarUrl:
@@ -29,7 +29,6 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
-
 
       - name: Download artifact from build job (current workflow)
         uses: actions/download-artifact@v2
@@ -70,4 +69,3 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_URL: ${{ env.sonarUrl }}
           PROJECT_PATH: .
-
