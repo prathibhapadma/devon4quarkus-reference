@@ -1,7 +1,7 @@
 name: quality-pipeline
 
 on:
-  workflow_call:
+  #workflow_call:
   workflow_dispatch:
     inputs:
       sonarUrl:
@@ -17,7 +17,7 @@ on:
 
 env:
   buildPipelineYamlName: 'build-pipeline.yml'
-  ciPipelineYamlName: 'ci-pipeline.yml'
+  #ciPipelineYamlName: 'ci-pipeline.yml'
   sonarUrl: ${{ github.event.inputs.sonarUrl || '$sonarUrl' }}
   sonarToken: ${{ github.event.inputs.sonarToken || secrets.SONARQUBE_TOKEN }}
   targetPath: ${{ github.event.inputs.targetPath || '$targetDirectory' }}
@@ -31,7 +31,6 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
-
 
       - name: Download artifact from build job (current workflow)
         uses: actions/download-artifact@v2
@@ -53,15 +52,15 @@ jobs:
           name: BuildOutput
           path: ${{ env.targetPath }}
 
-      - name: Download artifact from CI workflow
-        uses: dawidd6/action-download-artifact@v2
-        if: ${{ steps.downloadFromBuild.outcome == 'failure' }}
-        with:
-          workflow: ${{ env.ciPipelineYamlName }}
-          commit: ${{ github.sha }}
-          check_artifacts:  true
-          name: BuildOutput
-          path: ${{ env.targetPath }}
+#       - name: Download artifact from CI workflow
+#         uses: dawidd6/action-download-artifact@v2
+#         if: ${{ steps.downloadFromBuild.outcome == 'failure' }}
+#         with:
+#           workflow: ${{ env.ciPipelineYamlName }}
+#           commit: ${{ github.sha }}
+#           check_artifacts:  true
+#           name: BuildOutput
+#           path: ${{ env.targetPath }}
 
       - name: Extracting archive
         run: tar -C ${{ env.targetPath }} -xf ${{ env.targetPath }}/BuildOutput.tar
