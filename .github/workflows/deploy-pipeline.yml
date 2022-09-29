@@ -6,7 +6,7 @@ on:
     inputs:
       sonarUrl:
         required: false
-        default: http://http://54.220.247.102:9000/
+        default: http://54.220.247.102:9000/
       sonarToken:
         required: false
         default:
