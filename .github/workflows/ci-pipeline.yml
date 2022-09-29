@@ -1,7 +1,7 @@
 name: ci_workflow
 
-on:
-  push:
+# on:
+#   push:
 
 permissions:
   actions: write
