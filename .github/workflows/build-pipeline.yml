@@ -1,8 +1,9 @@
-name: build_workflow
+name: Build
 
 on:
+  workflow_call:
   workflow_dispatch:
-    inputs: 
+    inputs:
       sonarUrl:
         required: false
         default: http://54.220.247.102:9000/
