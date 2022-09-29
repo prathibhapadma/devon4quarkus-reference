@@ -1,4 +1,4 @@
-name: $pipelineName
+name: quality-pipeline
 
 on:
   workflow_call:
