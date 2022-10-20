@@ -29,7 +29,7 @@ jobs:
   on-success-or-manual:
     name: Package
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    #if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v2
@@ -41,37 +41,37 @@ jobs:
         with:
           envFilePath: ".github/vars/*"
 
-      - name: Download artifact from build workflow
-        uses: dawidd6/action-download-artifact@v2
-        id: downloadFromBuild
-        continue-on-error: true
-        with:
-          workflow: ${{ env.buildPipelineYamlName }}
-          commit: ${{ github.event.workflow_run.head_commit.id || github.sha }}
-          check_artifacts:  true
-          name: BuildOutput
-          path: ${{ env.targetPath }}
+#       - name: Download artifact from build workflow
+#         uses: dawidd6/action-download-artifact@v2
+#         id: downloadFromBuild
+#         continue-on-error: true
+#         with:
+#           workflow: ${{ env.buildPipelineYamlName }}
+#           commit: ${{ github.event.workflow_run.head_commit.id || github.sha }}
+#           check_artifacts:  true
+#           name: BuildOutput
+#           path: ${{ env.targetPath }}
 
-      - name: Download artifact from CI workflow
-        uses: dawidd6/action-download-artifact@v2
-        if: ${{ steps.downloadFromBuild.outcome == 'failure' }}
-        with:
-          workflow: ${{ env.ciPipelineYamlName }}
-          commit: ${{ github.event.workflow_run.head_commit.id || github.sha }}
-          check_artifacts:  true
-          name: BuildOutput
-          path: ${{ env.targetPath }}
+#       - name: Download artifact from CI workflow
+#         uses: dawidd6/action-download-artifact@v2
+#         if: ${{ steps.downloadFromBuild.outcome == 'failure' }}
+#         with:
+#           workflow: ${{ env.ciPipelineYamlName }}
+#           commit: ${{ github.event.workflow_run.head_commit.id || github.sha }}
+#           check_artifacts:  true
+#           name: BuildOutput
+#           path: ${{ env.targetPath }}
 
-      - name: Extracting archive
-        run: tar -C ${{ env.targetPath }} -xf ./BuildOutput.tar
+#       - name: Extracting archive
+#         run: tar -C ${{ env.targetPath }} -xf ./BuildOutput.tar
 
       - name: Build and push image to registry
         run: .github/workflows/scripts/package.sh -f "$GITHUB_WORKSPACE/${{ env.relativeDockerfilePath }}" -c "$GITHUB_WORKSPACE" -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_PASSWORD }}"  -r "${{ env.registry }}" -i "${{ env.imageName }}" -b "${{ github.event.workflow_run.head_branch || github.ref }}"
         if: ${{ env.isECR != 'true' }}
 
-      - name: Build and push image to registry (AWS)
-        run: .github/workflows/scripts/package.sh -f "$GITHUB_WORKSPACE/${{ env.relativeDockerfilePath }}" -c "$GITHUB_WORKSPACE" -a "${{ secrets.AWS_ACCESS_KEY }}" -s "${{ secrets.AWS_SECRET_ACCESS_KEY }}" -l "${{ env.region }}" -r "${{ env.registry }}" -i "${{ env.imageName }}" -b "${{ github.event.workflow_run.head_branch || github.ref }}"
-        if: ${{ env.isECR == 'true' }}
+#       - name: Build and push image to registry (AWS)
+#         run: .github/workflows/scripts/package.sh -f "$GITHUB_WORKSPACE/${{ env.relativeDockerfilePath }}" -c "$GITHUB_WORKSPACE" -a "${{ secrets.AWS_ACCESS_KEY }}" -s "${{ secrets.AWS_SECRET_ACCESS_KEY }}" -l "${{ env.region }}" -r "${{ env.registry }}" -i "${{ env.imageName }}" -b "${{ github.event.workflow_run.head_branch || github.ref }}"
+#         if: ${{ env.isECR == 'true' }}
 
 # mark to insert step for additional artifact #
   on-failure:
