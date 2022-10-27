@@ -1,4 +1,4 @@
-name: build-pipeline-timothe
+name: build-pipeline-test
 
 on:
   workflow_call:
@@ -31,3 +31,10 @@ jobs:
         with:
           name: BuildOutput
           path: ./target/
+      
+      - name: Build the application
+        run: |
+          ls -lrta
+          cd ./target
+          ls -lrta
+        
