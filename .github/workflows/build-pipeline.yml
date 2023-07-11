@@ -1,4 +1,4 @@
-name: build-pipeline-timothe
+name: build pipeline
 
 on:
   workflow_call:
